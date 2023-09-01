@@ -11,7 +11,6 @@ domain Epsilon {
 
 function tokCountRef(r:Ref): Ref
     ensures tokCountRef(temp(r))==result // removing this line makes the file verify with silicon
-    decreases *
 
 domain parallelHeaps { 
     function temp(x: Ref): Ref 

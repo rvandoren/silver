@@ -13,6 +13,8 @@ method binary_search(a: IArray, key: Int) returns (index: Int)
   ensures  -1 <= index && index < len(a)
   ensures  0 <= index ==> loc(a, index).val == key
   ensures  -1 == index ==> (forall i: Int :: 0 <= i && i < len(a) ==> loc(a,i).val != key)
+  // added problem
+  ensures index == key
 {
   var low: Int := 0
   var high: Int := len(a)

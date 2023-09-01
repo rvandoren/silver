@@ -53,6 +53,8 @@ method client() {
   assert x == loc(a, len(a) - 1).val /* Necessary to prove the final assertion (due to triggering) */
   assert x == 2
   assert loc(a, 1).val < x
+  // added problem
+  assert x == len(a)
 }
 
 

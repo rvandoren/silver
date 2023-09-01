@@ -112,6 +112,8 @@ method graph_copy_rec(this: Ref, node_map: INodeMap, setOfRef: Set[Ref], node_ma
   ensures forall x: Ref :: x in map_domain(res_node_map) ==> lookup(res_node_map,x) in res_copy_nodes
   ensures forall x: Ref :: x in res_copy_nodes ==> acc(x.val)
   ensures forall x: Ref :: x in res_copy_nodes ==> acc(x.edges)
+  // added problem
+  ensures acc(this.val, rd)
 {
   var i: Int // an edge index
   var S: Set[Int]

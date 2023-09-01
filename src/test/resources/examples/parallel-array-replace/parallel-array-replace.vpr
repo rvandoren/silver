@@ -44,6 +44,8 @@ method Client(a: Array)
   requires 1 < len(a)
   requires forall i: Int :: 0 <= i && i < len(a) ==> acc(loc(a, i).val)
   requires Contains(a, 5, 1)
+  // added problem
+  ensures Contains(a, 2, 3)
 {
   Replace(a, 1, len(a), 5, 7)
   assert Contains(a, 5, 1)  // Requires function framing

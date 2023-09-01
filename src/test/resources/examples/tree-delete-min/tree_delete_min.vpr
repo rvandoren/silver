@@ -43,6 +43,8 @@ method tree_delete_min(x: Ref) returns (z: Ref)
   requires x != null && acc(Tree(x))
   ensures acc(Tree(z))                  /* POST1 */
   ensures vals(z) == old(vals(x))[1..]  /* POST2 */
+  // added problem
+  ensures x == z
 {
   var p: Ref := x
   var plvs: Seq[Int]

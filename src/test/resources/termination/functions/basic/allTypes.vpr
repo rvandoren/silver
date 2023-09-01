@@ -1,7 +1,7 @@
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/publicdomain/zero/1.0/
 
-import <decreases/multiset.vpr>
+import <decreases/all.vpr>
 
 //Example decreasing Int
 function fact(x:Int): Int

@@ -58,6 +58,8 @@ method client() {
   assert x == 2
 
   assert loc(a, 1).val < x
+  // added problem
+  assert x == len(a)
 }
 
 

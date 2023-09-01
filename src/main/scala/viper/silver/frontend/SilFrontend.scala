@@ -7,12 +7,13 @@
 package viper.silver.frontend
 
 import viper.silver.ast.utility.Consistency
-import viper.silver.ast._
+import viper.silver.ast.{SourcePosition, _}
 import viper.silver.parser._
 import viper.silver.plugin.SilverPluginManager
 import viper.silver.plugin.SilverPluginManager.PluginException
 import viper.silver.reporter._
 import viper.silver.verifier._
+import fastparse.Parsed
 import java.nio.file.{Path, Paths}
 import viper.silver.FastMessaging
 
@@ -50,21 +51,6 @@ trait SilFrontend extends DefaultFrontend {
         case Failure(_) => ApplicationExitReason.VERIFICATION_FAILED
       }
     }
-  }
-
-  def resetPlugins(): Unit = {
-    val pluginsArg: Option[String] = if (_config != null) {
-      // concat defined plugins and default plugins
-      val list = _config.plugin.toOption ++ (if (_config.disableDefaultPlugins()) Seq() else defaultPlugins)
-      if (list.isEmpty) {
-        None
-      } else {
-        Some(list.mkString(":"))
-      }
-    } else {
-      None
-    }
-    _plugins = SilverPluginManager(pluginsArg)(reporter, logger, _config, fp)
   }
 
   /**
@@ -199,7 +185,13 @@ trait SilFrontend extends DefaultFrontend {
     super.reset(input)
 
     if(_config != null) {
-      resetPlugins()
+
+      // concat defined plugins and default plugins
+      val pluginsArg: Option[String] = {
+        val list = _config.plugin.toOption ++ defaultPlugins
+        if (list.isEmpty) { None } else { Some(list.mkString(":")) }
+      }
+      _plugins = SilverPluginManager(pluginsArg)(reporter, logger, _config, fp)
     }
   }
 
@@ -255,8 +247,7 @@ trait SilFrontend extends DefaultFrontend {
   }
 
   def finish(): Unit = {
-    val tRes = result.transformedResult()
-    val res = plugins.beforeFinish(tRes)
+    val res = plugins.beforeFinish(result)
     _verificationResult = Some(res)
     res match {
       case Success =>
@@ -275,11 +266,22 @@ trait SilFrontend extends DefaultFrontend {
     plugins.beforeParse(input, isImported = false) match {
       case Some(inputPlugin) =>
         val result = fp.parse(inputPlugin, file, Some(plugins))
-        if (result.errors.forall(p => p.isInstanceOf[ParseWarning])) {
-          reporter report WarningsDuringParsing(result.errors)
-          Succ({result.initProperties(); result})
-        }
-        else Fail(result.errors)
+          result match {
+            case Parsed.Success(e@ PProgram(_, _, _, _, _, _, _, _, err_list), _) =>
+              if (err_list.isEmpty || err_list.forall(p => p.isInstanceOf[ParseWarning])) {
+                reporter report WarningsDuringParsing(err_list)
+                Succ({e.initProperties(); e})
+              }
+              else Fail(err_list)
+            case fail @ Parsed.Failure(_, index, _) =>
+              val msg = fail.trace().aggregateMsg
+              val (line, col) = fp.lineCol.getPos(index)
+              Fail(List(ParseError(msg, SourcePosition(file, line, col))))
+            //? val pos = extra.input.prettyIndex(index).split(":").map(_.toInt)
+              //? Fail(List(ParseError(s"Expected $msg", SourcePosition(file, pos(0), pos(1)))))
+            case error: ParseError => Fail(List(error))
+          }
+
       case None => Fail(plugins.errors)
     }
   }

@@ -212,6 +212,8 @@ method client(a: IArray)
   requires forall i: Int :: 0 <= i && i < len(a) ==> acc(loc(a, i).val)
   requires forall i: Int :: 0 <= i && i <= 10 ==> loc(a, i).val == i
   ensures forall i: Int :: 0 <= i && i < len(a) ==> acc(loc(a, i).val)
+  // added problem
+  ensures len(a) == 5
 {
   var storeIndex: Int
   var pw: Seq[Int]

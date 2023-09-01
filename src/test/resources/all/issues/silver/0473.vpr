@@ -16,6 +16,6 @@ domain Test[T] {
 }
 
 domain DuplicateTest[T] {
-  //:: ExpectedOutput(typechecker.error)
+  //:: ExpectedOutput(consistency.error)
   function add_wrong(left: T, left: T): T
 }

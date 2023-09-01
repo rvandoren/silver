@@ -23,6 +23,8 @@ method lcp(a: IArray, x: Int, y: Int) returns (n: Int)
    */
   // ensures  forall k: Int :: 0 <= k && k < n ==> loc(a, x + k).val == loc(a, y + k).val
   ensures  x + n < len(a) && y + n < len(a) ==> loc(a, x + n).val != loc(a, y + n).val
+  // added problem
+  ensures x == y
 {
    n := 0
    while (x + n < len(a) &&  y + n < len(a) && loc(a, x + n).val == loc(a, y + n).val)

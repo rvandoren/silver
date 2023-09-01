@@ -93,7 +93,7 @@ case class MapEntry(options: Map[Seq[ValueEntry], ValueEntry], default: ValueEnt
         val indices = args.map(_.get._1)
         // We expect the arguments in the order 0, 1, ..., n-1; if we get something else, reject.
         // TODO: Find out if this order is always guaranteed,
-        if (indices != (0 until indices.size).map(_.toString))
+        if (indices != (0 until indices.size))
           None
         else
           Some(args.map(_.get._2))
@@ -162,6 +162,7 @@ trait ErrorMessage {
 
 trait VerificationError extends AbstractError with ErrorMessage {
   def reason: ErrorReason
+  def methodIdentifier = readableMessage(true, true)
   def readableMessage(withId: Boolean = false, withPosition: Boolean = false): String
   override def readableMessage: String = {
     val msg = readableMessage(false, true)
@@ -239,7 +240,7 @@ abstract class AbstractVerificationError extends VerificationError {
   }
 
   /** Transform the error back according to the specified error transformations */
-  override def transformedError(): AbstractVerificationError = {
+  def transformedError(): AbstractVerificationError = {
     val errorT = offendingNode.transformError(this)
     val reasonT = errorT.reason.offendingNode.transformReason(errorT.reason)
 

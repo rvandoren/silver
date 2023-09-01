@@ -82,13 +82,6 @@ abstract class SilFrontendConfig(args: Seq[String], private var projectName: Str
     hidden = true
   )
 
-  val disableDefaultPlugins = opt[Boolean]("disableDefaultPlugins",
-    descr = "Deactivate all default plugins.",
-    default = Some(false),
-    noshort = true,
-    hidden = true
-  )
-
   val plugin = opt[String]("plugin",
     descr = "Load plugin(s) with given class name(s). Several plugins can be separated by ':'. " +
       "The fully qualified class name of the plugin should be specified.",
@@ -107,6 +100,8 @@ abstract class SilFrontendConfig(args: Seq[String], private var projectName: Str
     case "native" => NativeModel
     case "variables" => VariablesModel
     case "mapped" => MappedModel
+    case "intermediate" => IntermediateModel
+    case "extended" => ExtendedModel
     case i => throw new IllegalArgumentException(s"Unsupported counterexample model provided. Expected 'native', 'variables' or 'mapped' but got $i")
   }))
 
@@ -183,3 +178,5 @@ trait CounterexampleModel
 case object NativeModel extends CounterexampleModel
 case object VariablesModel extends CounterexampleModel
 case object MappedModel extends CounterexampleModel
+case object IntermediateModel extends CounterexampleModel
+case object ExtendedModel extends CounterexampleModel
